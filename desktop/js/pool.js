@@ -15,34 +15,34 @@
 	* along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-$(".eqLogic").delegate(".listCmdInfo", 'click', function () 
+$(".eqLogic").delegate(".listCmdInfo", 'click', function ()
 {
     var el = $(this).closest('.form-group').find('.eqLogicAttr');
-    jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) 
+    jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result)
 	{
-        if (el.attr('data-concat') == 1) 
+        if (el.attr('data-concat') == 1)
 		{
             el.atCaret('insert', result.human);
-		} 
-		else 
+		}
+		else
 		{
             el.value(result.human);
 		}
 	});
 });
 
-$("body").delegate(".listCmdAction", 'click', function () 
+$("body").delegate(".listCmdAction", 'click', function ()
 {
     var type = $(this).attr('data-type');
     var el = $(this).closest('.' + type).find('.expressionAttr[data-l1key=cmd]');
-    jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function (result) 
+    jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function (result)
 	{
         el.value(result.human);
-        jeedom.cmd.displayActionOption(el.value(), '', function (html) 
+        jeedom.cmd.displayActionOption(el.value(), '', function (html)
 		{
             el.closest('.' + type).find('.actionOptions').html(html);
 		});
-		
+
 	});
 });
 
@@ -52,7 +52,7 @@ $('#bt_cronGenerator').on('click',function() {
     });
 });
 
-$('.addAction').on('click', function () 
+$('.addAction').on('click', function ()
 {
     addAction({}, $(this).attr('data-type'));
 });
@@ -103,7 +103,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgTraitement]').on('change
     }
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgSurpresseur]').on('change', function () 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgSurpresseur]').on('change', function ()
 {
 	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgSurpresseur]').value() == "disabled")
 	{
@@ -115,7 +115,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgSurpresseur]').on('chang
 	}
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgFiltreSable]').on('change', function () 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgFiltreSable]').on('change', function ()
 {
 	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgFiltreSable]').value() == "disabled")
 	{
@@ -127,7 +127,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgFiltreSable]').on('chang
 	}
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgHivernage]').on('change', function () 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgHivernage]').on('change', function ()
 {
 	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgHivernage]').value() == "disabled")
 	{
@@ -163,10 +163,10 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=cfgAsservissementExterne]')
     }
 });
 
-$("body").delegate(".listCmdInfoAsservissement", 'click', function () 
+$("body").delegate(".listCmdInfoAsservissement", 'click', function ()
 {
     var el = $(this).closest('.form-group').find('.expressionAttr[data-l1key=cmd]');
-    jeedom.cmd.getSelectModal({cmd: {type: 'info', subtype: 'binary'}}, function (result) 
+    jeedom.cmd.getSelectModal({cmd: {type: 'info', subtype: 'binary'}}, function (result)
 	{
         el.value(result.human);
 	});
@@ -190,31 +190,45 @@ $("body").delegate(".listCmdInfoMarcheForcee", 'click', function ()
     });
 });
 
-$('body').delegate('.cmdAction.expressionAttr[data-l1key=cmd]', 'focusout', function (event) 
+$('body').delegate('.cmdAction.expressionAttr[data-l1key=cmd]', 'focusout', function (event)
 {
     var type = $(this).attr('data-type');
     var expression = $(this).closest('.' + type).getValues('.expressionAttr');
     var el = $(this);
-    jeedom.cmd.displayActionOption($(this).value(), init(expression[0].options), function (html) 
+    jeedom.cmd.displayActionOption($(this).value(), init(expression[0].options), function (html)
 	{
         el.closest('.' + type).find('.actionOptions').html(html);
 	});
-	
+
 });
 
-$("body").delegate('.bt_removeAction', 'click', function () 
+$("body").delegate('.bt_removeAction', 'click', function ()
 {
     var type = $(this).attr('data-type');
     $(this).closest('.' + type).remove();
 });
 
-function saveEqLogic(_eqLogic) 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=Activate_HCHP]').on('change', function ()
 {
-    if (!isset(_eqLogic.configuration)) 
+    if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=Activate_HCHP]').value() == "1")
+    {
+        $('.horairePivot').hide();
+				$('.heureCreuse').show();
+    }
+    else
+    {
+        $('.horairePivot').show();
+				$('.heureCreuse').hide();
+    }
+});
+
+function saveEqLogic(_eqLogic)
+{
+    if (!isset(_eqLogic.configuration))
 	{
         _eqLogic.configuration = {};
 	}
-	
+
     _eqLogic.configuration.filtrationOn = $('#div_filtrationOn .filtrationOn').getValues('.expressionAttr');
     _eqLogic.configuration.filtrationStop = $('#div_filtrationStop .filtrationStop').getValues('.expressionAttr');
 
@@ -223,33 +237,33 @@ function saveEqLogic(_eqLogic)
 
     _eqLogic.configuration.traitementOn = $('#div_traitementOn .traitementOn').getValues('.expressionAttr');
     _eqLogic.configuration.traitementStop = $('#div_traitementStop .traitementStop').getValues('.expressionAttr');
-	
+
     _eqLogic.configuration.surpresseurOn = $('#div_surpresseurOn .surpresseurOn').getValues('.expressionAttr');
     _eqLogic.configuration.surpresseurStop = $('#div_surpresseurStop .surpresseurStop').getValues('.expressionAttr');
-	
+
     _eqLogic.configuration.asservissement = $('#div_asservissement .asservissement').getValues('.expressionAttr');
 
     _eqLogic.configuration.arretTotal = $('#div_arretTotal .arretTotal').getValues('.expressionAttr');
 
     _eqLogic.configuration.marcheForcee = $('#div_marcheForcee .marcheForcee').getValues('.expressionAttr');
 
-    $('#div_modes .mode').each(function () 
+    $('#div_modes .mode').each(function ()
 	{
         var existingMode = $(this).getValues('.modeAttr');
         existingMode = existingMode[0];
         existingMode.actions = $(this).find('.modeAction').getValues('.expressionAttr');
         _eqLogic.configuration.existingMode.push(existingMode);
 	});
-	
+
 	return _eqLogic;
 }
 
-function printEqLogic(_eqLogic) 
+function printEqLogic(_eqLogic)
 {
-	
+
     $('#div_filtrationOn').empty();
     $('#div_filtrationStop').empty();
-	
+
     $('#div_chauffageOn').empty();
     $('#div_chauffageStop').empty();
 
@@ -258,32 +272,32 @@ function printEqLogic(_eqLogic)
 
     $('#div_surpresseurOn').empty();
     $('#div_surpresseurStop').empty();
-	
+
     $('#div_modes').empty();
-	
+
     $('#div_asservissement').empty();
 
     $('#div_arretTotal').empty();
 
     $('#div_marcheForcee').empty();
 
-	if (isset(_eqLogic.configuration)) 
+	if (isset(_eqLogic.configuration))
 	{
-        if (isset(_eqLogic.configuration.filtrationOn)) 
+        if (isset(_eqLogic.configuration.filtrationOn))
 		{
-            for (var i in _eqLogic.configuration.filtrationOn) 
+            for (var i in _eqLogic.configuration.filtrationOn)
 			{
                 addAction(_eqLogic.configuration.filtrationOn[i], 'filtrationOn');
 			}
 		}
-        if (isset(_eqLogic.configuration.filtrationStop)) 
+        if (isset(_eqLogic.configuration.filtrationStop))
 		{
-            for (var i in _eqLogic.configuration.filtrationStop) 
+            for (var i in _eqLogic.configuration.filtrationStop)
 			{
                 addAction(_eqLogic.configuration.filtrationStop[i], 'filtrationStop');
 			}
 		}
-		
+
         if (isset(_eqLogic.configuration.chauffageOn))
 		{
             for (var i in _eqLogic.configuration.chauffageOn)
@@ -314,21 +328,21 @@ function printEqLogic(_eqLogic)
         }
         if (isset(_eqLogic.configuration.surpresseurOn))
 		{
-            for (var i in _eqLogic.configuration.surpresseurOn) 
+            for (var i in _eqLogic.configuration.surpresseurOn)
 			{
                 addAction(_eqLogic.configuration.surpresseurOn[i], 'surpresseurOn');
 			}
 		}
-        if (isset(_eqLogic.configuration.surpresseurStop)) 
+        if (isset(_eqLogic.configuration.surpresseurStop))
 		{
-            for (var i in _eqLogic.configuration.surpresseurStop) 
+            for (var i in _eqLogic.configuration.surpresseurStop)
 			{
                 addAction(_eqLogic.configuration.surpresseurStop[i], 'surpresseurStop');
 			}
 		}
-		if (isset(_eqLogic.configuration.asservissement)) 
+		if (isset(_eqLogic.configuration.asservissement))
 		{
-            for (var i in _eqLogic.configuration.asservissement) 
+            for (var i in _eqLogic.configuration.asservissement)
 			{
                 addAsservissement(_eqLogic.configuration.asservissement[i]);
             }
@@ -350,7 +364,7 @@ function printEqLogic(_eqLogic)
     }
 }
 
-function addAction(_action, _type) 
+function addAction(_action, _type)
 {
     var div = '<div class="' + _type + '">';
     div += '<div class="form-group ">';
@@ -372,7 +386,7 @@ function addAction(_action, _type)
     $('#div_' + _type + ' .' + _type + ':last').setValues(_action, '.expressionAttr');
 }
 
-function addAsservissement(_info) 
+function addAsservissement(_info)
 {
     var div = '<div class="asservissement">';
     div += '<div class="form-group ">';
