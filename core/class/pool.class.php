@@ -461,8 +461,8 @@ class pool extends eqLogic
         // Arrondi en minutes
         $dureeHeures = floor($dureeHeures * 60) / 60;
 
-        // La durée ne peut pas etre superieure à 24 H
-        $dureeHeures = min($dureeHeures, 24.00);
+        // La durée ne peut pas etre superieure à 23 H, 30 mn de pause toutes les 12h
+        $dureeHeures = min($dureeHeures, 23.00);
 
         // Conversion en secondes pour les calculs
         $filtrationSecondes = $dureeHeures * 3600.0;
@@ -810,7 +810,7 @@ class pool extends eqLogic
 
                     } else if ($filtrationSecondes <= (8 * 3600)) {
 
-                        // Temps de filtration <= 8 heures
+                        // Temps de filtration <= 8 heures, filtration 100% HC
                         log::add('pool', 'debug', $this->getHumanName() . 'Temps de filtration ' . $filtrationSecondes . ' ' . date("H:i", $filtrationSecondes) . ' <= 8 heures');
 
                         $filtrationDebut = $debutHeureCreuseJourSecondes;
@@ -820,7 +820,8 @@ class pool extends eqLogic
 
                     } else {
 
-                        // Temps de filtration > 8 heures, repartition autour des deux plages
+                        // Temps de filtration > 8 heures, repartition autour des deux plages HC
+                        // Attention l'algo avec un pivot et des % genere des overlap entre les 2 plages quand on approche de 24h de filtration
                         log::add('pool', 'debug', $this->getHumanName() . 'Temps de filtration ' . $filtrationSecondes . ' ' . date("H:i", $filtrationSecondes) . ' > 8 heures');
 
                         $pivotHeureCreuseJourSecondes = $debutHeureCreuseJourSecondes + (($finHeureCreuseJourSecondes - $debutHeureCreuseJourSecondes) / 2.0);
@@ -844,6 +845,23 @@ class pool extends eqLogic
                         // Nuit
                         $filtrationPauseFin = $pivotHeureCreuseNuitSecondes - (($filtrationSecondes / 2.0) / $rationNuit);
                         $filtrationFin = $pivotHeureCreuseNuitSecondes + (($filtrationSecondes / 2.0) / $rationNuit);
+
+                        // Si la filtration s'arrete apres le debut du jour suivant alors on l equilibre avec le soir
+                        $diffFinDebut=$filtrationFin-3600*24-$filtrationDebut;
+                        if ($diffFinDebut >= 0) {
+                            log::add('pool', 'debug', $this->getHumanName() . 'adjust filtration diffFinDebut: ' . $diffFinDebut);
+                            $diffPause=$filtrationPauseFin-$filtrationPauseDebut;
+                            log::add('pool', 'debug', $this->getHumanName() . 'adjust filtration diffPause: ' . $diffPause);
+                            $diffPauseFinDebut=$diffPause-$diffFinDebut;
+                            if ($diffPauseFinDebut>=0){
+                                $filtrationPauseFin=$filtrationPauseFin-$diffFinDebut-$diffPauseFinDebut/2;
+                                $filtrationFin=$filtrationFin-$diffFinDebut-$diffPauseFinDebut/2;
+                            } else {
+                                #TODO FIXME
+                                // Reduce the filtration time to ensure there is no bug
+                                $filtrationFin=$filtrationFin-$diffFinDebut-1;
+                            }
+                        }
                     }
                     break;
                 case '2':
